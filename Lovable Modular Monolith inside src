@@ -1,0 +1,112 @@
+这是为您深度整合、针对 **Lovable/Vite 环境**优化后的最终定稿规范。
+
+在 Lovable 平台约束下（必须保留 `src/` 根目录以维持 Supabase 类型生成和 Vite 工具链），我们采用 **“内生式模块化单体 (Modular Monolith inside src/)”** 架构，逻辑上模拟 Monorepo，物理上保持单体兼容。
+
+---
+
+### 文档 1：技术架构与全场景解耦规范 (ARCH_STANDARDS.md)
+
+```markdown
+# 技术架构与全场景解耦规范 (Unified Core & Multi-Platform Architecture)
+
+## 1. 核心哲学：三位一体 (The Trinity)
+系统通过单一的“大脑”驱动所有端，通过“适配器”处理环境差异。
+1.  **逻辑全抽离 (Logic Fully Decoupled)**: 业务逻辑 (`src/packages/api`) 与渲染框架和环境彻底物理隔离。
+2.  **UI 抽象化 (UI Abstracted)**: 表现层仅作为状态投影，使用设计令牌（Tokens）和虚拟化技术 (`Virtua`)。
+3.  **存储契约化 (Storage Contracted)**: 业务逻辑仅通过 `IStorageAdapter` 接口操作数据，屏蔽具体数据库 SDK。
+
+## 2. 内生式模块化结构 (Modular Monolith)
+在 `src/` 目录下模拟 Monorepo 结构：
+*   **`src/apps/web/`**: Astro/React 主入口、路由与页面（原 `src/pages`）。
+*   **`src/packages/api/`**: **动作层 (Action Layer)**。定义所有 Procedures，支持 tRPC (Web) 或 Local 模式。
+*   **`src/packages/ui/`**: **抽象 UI 层**。存放共享组件，集成 `Ionic` 组件库与 `Virtua` 虚拟滚动。
+*   **`src/packages/storage/`**: **适配器层**。实现 `SupabaseAdapter`, `D1Adapter`, `CapacitorSQLiteAdapter`。
+*   **`src/packages/core/`**: 包含全局配置 (`AppConfig`)、通用工具与设计 Token。
+
+## 3. 全场景能力抽象
+*   **PWA 增强 (Capacitor + Ionic)**: 利用 `vite-plugin-pwa` 管理离线缓存，通过 Capacitor 桥接原生插件。所有插件调用必须具备 Web 端降级 Mock。
+*   **移动端迁移 (RN/Expo)**: 核心逻辑层可在 React Native 环境下直接通过本地存储适配器运行，无需修改代码。
+*   **性能组件**: 大数据长列表统一使用 `Virtua` 进行零配置虚拟化，确保 PWA 与 Web 环境下的滚动流畅度。
+
+## 4. 渲染与存储策略
+*   **流量驱动 (90/10 Rule)**: 构建时查询 Cloudflare Analytics，预渲染前 10% 高频路径（SSG），剩余 90% 走 SSR 并入边缘 KV。
+*   **离线优先 (Offline-First)**: PWA/App 优先读取本地适配器数据，利用 `TanStack Query` 实现后台同步。
+
+## 5. 零硬编码准则 (Zero Hardcoding Policy)
+*   **配置化**: 所有的 API Endpoint、CDN 路径、存储 Provider、功能开关全部由 `src/packages/core/config` 统一分发。
+*   **设计令牌**: 样式必须使用 Token。Web 映射至 Tailwind，RN 映射至 StyleSheet。
+*   **文案国际化**: 所有 UI 文本必须通过 i18n 系统管理。
+```
+
+---
+
+### 文档 2：类型安全与跨端契约指南 (TYPE_SAFETY.md)
+
+```markdown
+# 类型安全与跨端契约指南 (Type Safety & Unified Contract)
+
+## 1. 契约驱动：Zod & tRPC 集成
+系统以 **Schema** 为核心契约，实现端到端的类型安全。
+*   **单一真相源**: 在 `src/packages/types` 定义业务实体、输入输出的 Zod Schema。
+*   **端到端同步**: 
+    *   **Web**: 通过 tRPC 实现“修改后即编译报错”的类型安全。
+    *   **PWA/Native**: 导入相同的 Action 类型实现本地逻辑的类型约束。
+
+## 2. 结果对象模式 (Unified Result Pattern)
+所有 API 动作和存储操作必须返回统一的 Result 包装器：
+```typescript
+type Result<T, E = AppError> = 
+  | { 
+      ok: true; 
+      data: T; 
+      source: 'server' | 'cache' | 'local' | 'bridge'; 
+      synced: boolean; 
+    } 
+  | { ok: false; error: E };
+```
+*   **source**: 标识数据来源（服务器、边缘缓存、本地数据库或原生桥接）。
+*   **synced**: 标识该本地数据是否已成功同步至云端。
+
+## 3. 运行时边界校验
+*   **零信任入口**: 所有的外部输入（API 响应、存储读取、URL 参数）必须经过 Zod Schema 校验。
+*   **禁止 any**: 无法确定类型的数据必须声明为 `unknown`，并通过类型谓词转换。
+
+## 4. 存储层类型契约 (Adapter Types)
+```typescript
+interface IStorageAdapter {
+  /** 泛型 T 确保从不同存储引擎返回相同形状的实体模型 */
+  query<T>(collection: string, params: QueryParams): Promise<Result<T[]>>;
+  
+  /** 身份认证抽象，屏蔽 Cookie (Web) 与 SecureStore (Native) 差异 */
+  auth: {
+    getSession(): Promise<Result<Session | null>>;
+  };
+}
+```
+
+## 5. 跨平台样式与 Token 类型化
+```typescript
+/** 设计令牌类型化，杜绝硬编码样式 */
+type ColorToken = keyof typeof DesignSystem.colors;
+type SpacingToken = keyof typeof DesignSystem.spacing;
+
+// UI 组件的样式 Props 仅接受这些字面量类型，禁止直接传入 string
+```
+
+## 6. 类型安全检查清单
+- [ ] 所有的 API 动作 (Procedures) 是否包含了 Zod 输入/输出校验？
+- [ ] 结果对象是否包含了 `source` 字段以支持移动端离线感知？
+- [ ] 是否在 Action 层之外出现了特定厂商（如 Supabase）的原始类型定义？
+- [ ] 虚拟列表 `Virtua` 的数据源是否保持了 `Readonly` 属性？
+
+## 7. 质量红线
+*   **平台污染**: `src/packages/api` 中禁止出现任何 `window` 或 `document` 的类型引用。
+*   **静默失败**: 所有的 Action 调用必须在 UI 层显式处理 `ok: false` 的错误逻辑。
+```
+
+---
+
+### 💡 架构价值
+1.  **共享大脑**: `src/packages/api` 下的逻辑逻辑是全平台通用的，无论你现在是 Web，还是明天用 Capacitor 封装 PWA，甚至是未来迁移到纯 React Native，业务逻辑只需移动文件位置，代码逻辑 0 改动。
+2.  **传输透明**: 你的 UI 只调用 `api.user.get()`。在 Web 上它走网络；在 App 离线模式下，它自动调用本地 `SqliteAdapter`。
+3.  **开发效率**: 配合 Lovable 的自动修复能力，这种清晰的分层结构能让 AI 更准确地识别应在哪个“Package”内进行代码修复，而不会产生逻辑冲突。
