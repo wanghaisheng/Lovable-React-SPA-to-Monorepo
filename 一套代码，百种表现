@@ -1,0 +1,82 @@
+针对“**appid 通过域名映射确定（如 x.heytcm.com）**”这一核心逻辑，我们需要在架构演进计划中，将“**身份识别（Identity Resolution）**”设计为一种透明的、自动化的基础设施能力。
+
+以下是针对这一场景，对《架构演进与迁移执行计划》的深度补充建议，确保 100+ 产品的维护成本不会随数量线性增长。
+
+---
+
+### 1. 域名与 AppID 映射层 (The Mapper)
+在 `packages/config` 中建立一个核心的“租户注册中心”，作为全系统的唯一事实来源。
+
+*   **实现建议**：建立一个 `tenant-registry.ts`。
+*   **代码结构**：
+    ```typescript
+    // packages/config/src/tenants.ts
+    export const TENANT_MAP = {
+      'shanyao.heytcm.com': { appId: 'sy_001', name: '山药百科', theme: 'green' },
+      'renshen.heytcm.com': { appId: 'rs_002', name: '人参研究', theme: 'red' },
+      // ... 100+ 配置
+    } as const;
+
+    export type TenantConfig = typeof TENANT_MAP[keyof typeof TENANT_MAP];
+    ```
+
+### 2. 自动化身份注入 (阶段一 & 阶段三补充)
+
+为了实现“零硬编码”，`appid` 的提取和传递应在两个关键位置自动化：
+
+#### A. 表现层（Web 入口：`apps/web`）
+在应用初始化时，通过一个 **Guard/Provider** 自动解析域名。
+*   **执行动作**：在 `App.tsx` 最外层包裹 `TenantProvider`。
+*   **逻辑**：
+    1.  获取 `window.location.hostname`。
+    2.  匹配 `TENANT_MAP`。
+    3.  若匹配失败，进入 404 或通用页；匹配成功，将 `config` 注入 React Context。
+    4.  **Action Layer 绑定**：所有的 API 请求头自动带上 `x-app-id: sy_001`。
+
+#### B. 存储适配层（Storage Adapter：`packages/core`）
+这是最重要的部分。**开发者写代码时不应手动写 `.eq('appid', '...')`**。
+
+*   **执行动作**：在 `StorageAdapter` 内部实现“自动作用域（Auto-Scoping）”。
+*   **伪代码示例**：
+    ```typescript
+    // packages/core/src/adapter.ts
+    export class SupabaseAdapter implements IStorageAdapter {
+      constructor(private readonly appId: string) {}
+
+      async query(table: string) {
+        // 自动注入过滤条件，开发者无感知
+        return supabase.from(table).select('*').eq('appid', this.appId);
+      }
+    }
+    ```
+*   **工厂模式**：通过 Action Layer 的 Context 自动实例化带 AppID 的 Adapter。
+
+### 3. 执行计划的细节修正
+
+#### 阶段二：类型契约 (Type Safety)
+*   **Zod 增强**：在 `packages/types` 中，所有业务表的 Schema（如 `PaperSchema`, `ProductSchema`）必须包含 `appid: z.string()` 字段。
+*   **Result 模式注入**：`Result` 对象的 `source` 字段可以进一步扩展为 `tenant: { id: string, domain: string }`，方便监控和日志回溯。
+
+#### 阶段三：Action Layer 的多态性
+*   **Context 传递**：所有的 Action 统一接收一个 `ActionContext` 参数，其中包含解析好的 `appId`。
+*   **i18n 动态映射**：
+    *   针对 100+ 产品，文案可能略有不同。
+    *   `i18n` 的 Key 可以保持一致，但加载语言包时，优先尝试加载 `locales/${appId}/zh.json`，如果不存在则回退到 `locales/common/zh.json`。
+
+#### 阶段四：自动化运维与预览
+*   **通配符部署**：在 Vercel/Cloudflare/Nginx 层配置通配符域名（`*.heytcm.com`）指向同一个 Web 实例。
+*   **预览环境自动化**：
+    *   由于有 100+ 域名，传统的“一域名一项目”不可行。
+    *   利用 **Middleware (Edge Functions)**：在请求到达前，中间件根据 Hostname 检查合法性并重写路由。
+
+---
+
+### 4. 针对 100+ 产品的“防错”检查项 (Checklist)
+
+1.  **数据越权隔离（核心）**：是否在数据库层面（如 Supabase RLS 或 Row Level Security）配置了基于 `appid` 的策略，确保即使前端传错 `appid`，底层数据库也会拒绝非法的跨域查询？
+2.  **SEO 差异化**：100+ 域名意味着 100+ 套 SEO TDK（标题、描述、关键词）。`AppConfig` 是否已包含这些 SEO 元数据，并在页面渲染时动态注入 `<head>`？
+3.  **静态资源（Assets）管理**：每个产品的 Logo、Favicon 路径是否通过 `/assets/${appId}/logo.png` 这种规范化路径存储，避免硬编码？
+4.  **热更新风险**：一次代码发布会同时影响 100+ 个网站，是否有“灰度发布”策略？（例如先更新 `test.heytcm.com`，验证通过后再全量）。
+
+### 总结
+您的“域名映射 AppID”方案非常契合 **“一套代码，百种表现”** 的 SaaS 类架构。在迁移执行中，请重点攻克 **“Storage Adapter 自动注入 appid”** 这一环，这能减少未来 90% 以上因手动传参导致的 Bug。
