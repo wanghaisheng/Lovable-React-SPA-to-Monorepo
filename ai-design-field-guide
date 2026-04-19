@@ -1,90 +1,161 @@
 
 ```
+这份《AI 设计现场指南》（AI Design Field Guide）是由 MC Dean 编写的深度手册，核心理念在于将设计从“像素执行”转向“意图表达”。
 
-AI Design Field Guide
-46 ways to work with AI design tools. Works with Claude Design, Figma Make, Stitch, Canva, or whatever you're using.
+以下是根据 PDF 内容整理的完整版，包含了全部 46 条策略、核心哲学以及著名的“五大问题”。
 
-The canvas was never the design. Charles and Ray Eames knew this in 1949. Design is a plan for arranging elements to accomplish a particular purpose — not a rendering, not a deliverable, not a beautifully crafted file.
+AI 设计现场指南 (AI Design Field Guide)
 
-AI design tools have made this visible in a way nothing else could. When you describe your intent and an artifact materialises, it becomes impossible to pretend the canvas was doing the thinking. The conversation was. Everything after is rendering.
+46 种与 AI 设计工具协作的方法
+适用于 Claude Design, Figma Make, Stitch, Canva 或任何未来出现的工具。
 
-This field guide is for designers who want to work with AI design tools the way a designer would — not just generate things, but think things. It is organised into five clusters that follow the arc of real design work. Use it before you open any tool. Use it while you're in it. Use it when something is going wrong and you can't name why.
+“设计是为实现特定目的而排列元素的计划。” —— Charles & Ray Eames
 
-Not prompts. Not templates. Ways to work.
+核心哲学：画布从未是设计的核心
 
-Five questions in the Eames tradition
-Run these before you open any design tool. Five questions. Ten minutes.
+画布本身从来不是设计。无论你使用的是哪种工具，设计发生在对话中，发生在任何东西出现在屏幕之前。屏幕上的一切只是“渲染（Rendering）”。
 
-The Eames never wrote these down as a checklist — but they are drawn directly from how the Eames worked, and from their definition of design as "a plan for arranging elements to accomplish a particular purpose." The questions are ours. The philosophy is theirs.
+本指南不提供提示词模板，而是提供工作方式：那些能将“设计思维”与“由 AI 渲染出的产物”区分开来的动作和纪律。
 
-#	Question	Why it matters
-01	What is the purpose?	Not "make a dashboard." What specific outcome does this achieve? For whom? In what moment of their day?
-02	Who, exactly?	Name a real person. Not "users." The person implies the aesthetic. The aesthetic does not imply the person.
-03	What are you working within?	Brand, time, technology, budget. Constraints are not obstacles. They are the shape of the solution.
-04	What is the one thing?	Three seconds. One thing to understand, feel, or do. Not three. One.
-05	How will you know it worked?	Not "it looks good." What changes in behaviour, decision, or understanding?
-The thinking that happens here is the design.
+第一部分：五大问题（Eames 传统）
 
-The Five Clusters
-1. Before You Start
-The design happens here. Before you open anything.
+在打开任何 AI 工具之前，用 10 分钟回答这五个问题。
 
-Answer "what is this for?" before you describe what it looks like.
-Name a real person before you name a colour.
-Write down your constraints before your preferences.
-Separate what you know from what you're assuming.
-Define success in human behaviour, not aesthetics.
-Ask: who is NOT the audience?
-Read your brand guide before your first prompt, not after.
-Run the five questions.
-2. Prompting for Intent
-You have the intent. Here's how to get it out of your head and into language precise enough to produce something real.
+目的是什么？
+不是“做一个仪表盘”，而是这个设计能实现什么具体的成果？为谁实现？在什么时刻？
 
-Lead with purpose, not description.
-Give context about the moment of use.
-Specify what the user needs to understand, feel, or do — not what they need to see.
-Include what you're NOT trying to do.
-State your constraints as facts, not apologies.
-Give the AI a role.
-Reference qualities, not styles.
-Specify the emotional register.
-Tell the AI what you know about your user's expertise level.
-Give the AI your failure mode.
-Include the business context.
-Prompt for multiple directions before you commit to one.
-Ask for the reasoning behind the first version.
-3. Iterating Through Conversation
-How to refine without losing ground. How to know when you're done.
+具体是谁？
+命名一个真实的人。不要说“用户”。人决定了审美，而审美无法决定人。
 
-Separate "I don't understand it" from "I don't like it."
-When something works, name it explicitly before you ask for changes.
-Be specific about what is wrong.
-Don't start over when you can redirect.
-Use the tool's custom controls as vocabulary.
-Ask the AI to explain its decisions before you critique them.
-When you're stuck, change the constraint rather than the aesthetic.
-Restate the original purpose periodically.
-Treat unexpected outputs as data.
-Know when to stop iterating.
-4. Critique and Evaluation
-You've seen the output. Now look at it like a designer.
+在什么限制下工作？
+品牌、时间、技术、预算。约束不是障碍，它们是解决方案的轮廓。
 
-Evaluate against purpose first, aesthetics second.
-Ask: would the real user understand this in three seconds?
-Test the hierarchy before the colour.
-Ask the AI to critique its own output against your stated intent.
-Bring a second voice in before you export.
-Check that brand application is correct, not just present.
-Evaluate for what is missing, not just what is there.
-Ask: does this solve the problem, or does it look like it solves the problem?
-5. Handoff and Output
-The design intent needs to travel. Here's how to make sure it does.
+那件最重要的事是什么？
+只有三秒钟。用户需要理解、感受或做的“那一件事”是什么？不是三件，是一件。
 
-Document the design intent before you export.
-Export for collaboration, not just for editing.
-When handing off to a developer or build tool, include the design rationale, not just the spec.
-Keep the conversation thread.
-Note which decisions were intentional and which were the AI's defaults.
-Brief the human who continues this work on the intent, not the output.
-Archive the prompts that produced good work.
+如何判断它是否奏效？
+不是“它看起来很好看”。而是行为、决策或理解发生了哪些变化？
+
+第二部分：46 条设计策略（五大集群）
+集群 01：开始之前 (Before You Start)
+
+设计发生在这里。在你打开任何工具之前。
+
+01. 在描述外观前，先回答“这是为了什么”。 目的先于形式。
+
+02. 在命名颜色前，先命名一个真实的人。 “一个在会议间隙做决定的 CFO”比“专业的、简洁的、企业风”更有用。
+
+03. 先写下约束条件，再写下偏好。 品牌系统、技术环境、时间。约束是生成性的，它们让你的方案与众不同。
+
+04. 分辨“已知”与“假设”。 在提示前，列出 3 个关于用户的已知事实和 3 个你的假设。设计往往在假设处出错。
+
+05. 用“人类行为”而非“美学标准”定义成功。 “用户能立即理解层级”是成功标准，“看起来很干净”则不是。
+
+06. 询问：谁“不是”受众？ 排除法能强化意图。为所有人设计等于不为任何人设计。
+
+07. 在发送第一个提示词前阅读品牌指南。 AI 会忠实地、错误地应用你的品牌。你需要明确告诉它如何应用。
+
+08. 运行“五大问题”。 目的、人、约束、核心点、成功衡量标准。
+
+集群 02：意图提示 (Prompting for Intent)
+
+如何将脑中的意图转化为足以产出真实成果的精准语言。
+
+09. 以目的引导，而非描述引导。 “帮助 CFO 在压力下快速决策”优于“做一个简洁的高管仪表盘”。
+
+10. 提供“使用时刻”的背景。 “某人在会议间隙用手机阅读”会彻底改变设计。
+
+11. 指定用户需要理解、感受或做的事——而不是他们需要看到的东西。 结果导向优于产出导向。
+
+12. 包含你“不想”做的事。 简报中的负空间与正空间同样重要。“这不应该看起来像一份销售文件”能排除一整类错误答案。
+
+13. 将约束视为事实陈述，而非道歉。 “这需要适配蓝白系统”是设计信息。
+
+14. 给 AI 一个角色。 “作为一名读过用户研究报告的 UX 设计师”与“作为一名平面设计师”产出的东西完全不同。
+
+15. 引用“特质”，而非“风格”。 “设计良好的政府服务的清晰感”优于具体的视觉风格引用。
+
+16. 指定情感基调。 例如“自信但不冒进”、“亲和但权威”。
+
+17. 告知 AI 用户的专业程度。 为专家设计可以压缩层级、跳过解释；为新手设计则完全不同。
+
+18. 告知 AI 你的“失败模式”。 “上一个版本很美但没人能看懂层级”是金子般的信息。
+
+19. 包含商业背景。 谁委托的？风险是什么？审批流程如何？
+
+20. 在确定一个方向前，提示多个方向。 要求 AI 生成三个截然不同的方向。过早承诺是 AI 辅助设计中最常见的错误。
+
+21. 询问第一版背后的推理。 在反应之前，先问 AI 为什么做出这些选择。
+
+集群 03：通过对话进行迭代 (Iterating Through Conversation)
+
+如何在不丢失阵地的情况下进行优化。如何知道何时结束。
+
+22. 区分“我不理解”和“我不喜欢”。 前者是清晰度问题，后者是价值观或品味问题。
+
+23. 当某些部分奏效时，明确指出。 “保留页眉的层级结构不变。”你不保护的东西，就会失去。
+
+24. 具体说明哪里出错了。 “层级感觉不对”不如“用户的眼睛先落在了数据表上而非操作按钮上”有用。
+
+25. 能重定向时不要重做。 “保留结构，改变情感基调”能保留有效部分。从头开始会重置一切。
+
+26. 将工具的自定义控制项视为词汇。 调节滑块和控制参数能帮你理解 AI 理解的维度。
+
+27. 在批评前，让 AI 解释其决策。 “带我了解一下你为什么选择这个布局”能暴露隐藏的假设。
+
+28. 卡住时，改变约束条件而非审美。 如果视觉优化没进度，通常是约束出了问题。
+
+29. 定期重述原始目的。 长对话中会产生意图偏移。每 5-6 次交流，重述一次核心目的。
+
+30. 将意外输出视为数据。 如果 AI 走了个奇怪的方向，先问为什么。这通常意味着你的简报存在模糊性。
+
+31. 知道何时停止迭代。 没有承诺的对话不是设计。当产出足够好到可以测试时，就去测试。追求完美迭代是陷阱。
+
+集群 04：批判与评估 (Critique and Evaluation)
+
+你已经看到了产出。现在像设计师一样审视它。
+
+32. 先评估目的，后评估审美。 它实现了目标吗？这是首要问题。
+
+33. 询问：真实用户能在 3 秒内理解吗？ 不是你，不是团队，而是你定义的那个真实用户。
+
+34. 在评估颜色前测试层级。 眼睛是否落在了该落的地方？层级是意义的结构，颜色只是装饰。
+
+35. 让 AI 根据你陈述的意图自我批评。 “考虑到我给你的简报，你产出的最薄弱环节是什么？”
+
+36. 在导出前引入第二种声音。 询问同事他们认为这个设计在尝试做什么。如果他们的答案与你一致，说明意图传达成功了。
+
+37. 检查品牌应用是否“正确”，而不只是“存在”。 AI 经常会错误地应用品牌。
+
+38. 评估“缺失了什么”，而不只是“有什么”。 缺席在意图批判中同样重要。
+
+39. 询问：这解决了问题，还是看起来解决了问题？ 前者经得起用户测试，后者只能通过审批会议。
+
+集群 05：交付与产出 (Handoff and Output)
+
+设计意图需要传递。如何确保它能成功传递。
+
+40. 导出前记录设计意图。 不是它长什么样，而是为什么要这样。
+
+41. 导出到 Canva 等工具是为了协作，而不只是编辑。 将意图文档一并带过去。没有理由的设计只是一张画。
+
+42. 交付给开发人员时，包含设计原委而非只有规范。 “这个间距是为了给复杂信息提供视觉呼吸感”比“padding: 32px”对工程师更有用。
+
+43. 保留对话线程。 这是设计历史。被拒绝的方向和约束条件比最终导出的文件更有价值。
+
+44. 标记哪些决策是你有意为之，哪些是 AI 的默认设置。 默认设置不是设计决策。
+
+45. 向接手的团队交办意图，而非产出。 “这是它尝试做的事、为谁做、在什么时刻、如何衡量成功”才是一份合格的交办。
+
+46. 归档产生优秀作品的提示词。 产出优秀作品的提示词是可复用的设计资产。
+
+指南信息
+
+作者： MC Dean (marieclairedean.substack.com)
+
+日期： 2026 年 4 月
+
+许可： MIT License · 开源
+
+核心： 画布从未是设计。意图才是。
 ```
